@@ -17,7 +17,7 @@
    isAllTrue([100, 2, 3, 4, 5], n => n < 10) // вернет false
  */
 function isAllTrue(array, fn) {
-  if (!Array.isArray(array) || !array.length) {
+  if (!(array instanceof Array) || !array.length) {
     throw new Error('empty array');
   } else if (typeof fn !== 'function') {
     throw new Error('fn is not a function');
@@ -49,7 +49,7 @@ function isAllTrue(array, fn) {
    isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
  */
 function isSomeTrue(array, fn) {
-  if (!Array.isArray(array) || !array.length) {
+  if (!(array instanceof Array) || !array.length) {
     throw new Error('empty array');
   } else if (typeof fn !== 'function') {
     throw new Error('fn is not a function');
@@ -75,7 +75,7 @@ function isSomeTrue(array, fn) {
  3.3: Необходимо выбрасывать исключение в случаях:
    - fn не является функцией (с текстом "fn is not a function")
  */
-function returnBadArguments(fn, ...args) {
+function returnBadArguments(fn) {
   const badResult = [];
 
   if (typeof fn !== 'function') {
@@ -84,9 +84,7 @@ function returnBadArguments(fn, ...args) {
 
   for (let i = 1; i < arguments.length; i++) {
     try {
-      if (fn(arguments[i])) {
-        throw new Error();
-      }
+      fn(arguments[i]);
     } catch (e) {
       badResult.push(arguments[i]);
     }
