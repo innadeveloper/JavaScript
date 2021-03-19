@@ -225,6 +225,7 @@ function observeChildNodes(where, fn) {
       });
     });
   });
+
   observer.observe(where, { childList: true, subtree: true });
 }
 
