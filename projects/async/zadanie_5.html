@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font: 16px Arial; 
+} 
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+</style>
+</head>    
+
+<body>
+  <body>
+    <div id="app">
+        <div id="loading-block">Загрузка...</div>
+        <div id="loading-failed">
+            <div>Не удалось загрузить города</div>
+            <button id="retry-button">Повторить</button>
+        </div>
+        <div id="filter-block">
+            <input id="filter-input" placeholder="название города" type="text">
+    
+            <div id="filter-result"></div>
+        </div>
+    
+    </div>
+<script> 
+
+const homeworkContainer = document.querySelector('#app');
+
+function loadTowns() {
+  return loadAndSortTowns();
+}
+
+function isMatching(full, chunk) {
+  return full.toLowerCase().includes(chunk.toLowerCase());
+}
+
+const loadingBlock = homeworkContainer.querySelector('#loading-block');
+
+const loadingFailedBlock = homeworkContainer.querySelector('#loading-failed');
+
+const retryButton = homeworkContainer.querySelector('#retry-button');
+
+const filterBlock = homeworkContainer.querySelector('#filter-block');
+
+const filterInput = homeworkContainer.querySelector('#filter-input');
+
+const filterResult = homeworkContainer.querySelector('#filter-result');
+
+let towns = [];
+
+retryButton.addEventListener('click', () => {
+  tryToLoad();
+});
+
+filterInput.addEventListener('input', function () {
+  updateFilter(this.value);
+});
+
+loadingFailedBlock.classList.add('hidden');
+filterBlock.classList.add('hidden');
+
+async function tryToLoad() {
+  try {
+    towns = await loadTowns();
+    loadingBlock.classList.add('hidden');
+    loadingFailedBlock.classList.add('hidden');
+    filterBlock.classList.remove('hidden');
+  } catch (e) {
+    loadingBlock.classList.add('hidden');
+    loadingFailedBlock.classList.remove('hidden');
+  }
+}
+
+function updateFilter(filterValue) {
+  filterResult.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+
+  for (const town of towns) {
+    if (filterValue && isMatching(town.name, filterValue)) {
+      const townDiv = document.createElement('div');
+      townDiv.textContent = town.name;
+      fragment.append(townDiv);
+    }
+  }
+
+  filterResult.append(fragment);
+}
+
+tryToLoad();
+
+ 
+function loadAndSortTowns() {
+  return new Promise(function (resolve, reject) {
+    fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+      .then((response) => {
+        return response.json();
+      })
+      .then((towns) => {
+        const sortTowns = towns.sort((a, b) => (a.name > b.name ? 1 : -1));
+        resolve(sortTowns);
+      })
+      .catch(() => {
+        reject();
+      });
+  });
+} 
+
+</script>
+</body>
+</html>
